@@ -8,23 +8,13 @@
     <artifactId>CobaltForge</artifactId>
     <version>0.0-SNAPSHOT</version>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <version>2.6</version>
-            </plugin>
-        </plugins>
-    </build>
-
     <dependencies>
         <dependency>
             <groupId>com.qualcomm.robotcore</groupId>
             <artifactId>robotcore</artifactId>
-            <scope>provided</scope>
+            <scope>system</scope>
             <version>-1</version>
-            <systemPath>${basedir}\src\lib\RobotCore-release.jar</systemPath>
+            <systemPath>${basedir}/src/lib/RobotCore-release.jar</systemPath>
         </dependency>
     </dependencies>
 </project>
