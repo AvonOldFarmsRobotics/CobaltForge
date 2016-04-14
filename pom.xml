@@ -21,10 +21,10 @@
     <dependencies>
         <dependency>
             <groupId>com.qualcomm.robotcore</groupId>
-            <artifactId>robotcore</artifactId>
-            <scope>provided</scope>
-            <version>-1</version>
-            <systemPath>${basedir}\src\lib\RobotCore-release.jar</systemPath>
+            <artifactId>RobotCore</artifactId>
+            <scope>system</scope>
+            <version>release</version>
+            <systemPath>${basedir}/src/lib/com/qualcomm/robotcore/RobotCore-release.jar</systemPath>
         </dependency>
     </dependencies>
 </project>
