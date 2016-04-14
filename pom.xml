@@ -6,7 +6,7 @@
 
     <groupId>framework.ftc.cobaltforge</groupId>
     <artifactId>CobaltForge</artifactId>
-    <version>0.0-SNAPSHOT</version>
+    <version>0.1-SNAPSHOT</version>
 
     <dependencies>
         <dependency>
@@ -14,7 +14,7 @@
             <artifactId>robotcore</artifactId>
             <scope>system</scope>
             <version>-1</version>
-            <systemPath>${basedir}/src/lib/RobotCore-release.jar</systemPath>
+            <systemPath>${basedir}/src/lib/com/qualcomm/robotcore/RobotCore-release.jar</systemPath>
         </dependency>
     </dependencies>
 </project>
