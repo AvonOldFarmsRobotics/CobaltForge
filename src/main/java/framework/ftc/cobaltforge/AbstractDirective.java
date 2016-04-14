@@ -38,6 +38,15 @@ public abstract class AbstractDirective {
         return complete;
     }
 
+    @Override
+    public String toString() {
+        return "AbstractDirective{" +
+                "forge=" + forge +
+                ", complete=" + complete +
+                ", next=" + next +
+                '}';
+    }
+
     protected final void telemetry(String data) {
         forge.telemetry.addData(forge.getName(), data);
     }

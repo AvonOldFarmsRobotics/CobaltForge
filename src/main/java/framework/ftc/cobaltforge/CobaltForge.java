@@ -60,7 +60,7 @@ public abstract class CobaltForge extends OpMode {
                         fieldList.add(new DirectiveFieldPair(field, directive));
                     } else if (clazz == DcMotor.class) {
                         DcMotor dcMotor = ((DcMotor) annotation);
-                        ensureType(field, DcMotor.class);
+                        ensureType(field, com.qualcomm.robotcore.hardware.DcMotor.class);
                         try {
                             field.set(directive, hardwareMap.dcMotor.get(dcMotor.value()));
                         } catch (IllegalAccessException e) {
@@ -68,7 +68,7 @@ public abstract class CobaltForge extends OpMode {
                         }
                     } else if (clazz == Servo.class) {
                         Servo servo = ((Servo) annotation);
-                        ensureType(field, Servo.class);
+                        ensureType(field, com.qualcomm.robotcore.hardware.Servo.class);
                         try {
                             field.set(directive, hardwareMap.servo.get(servo.value()));
                         } catch (IllegalAccessException e) {
