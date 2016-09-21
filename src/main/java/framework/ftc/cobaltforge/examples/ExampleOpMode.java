@@ -11,6 +11,6 @@ public class ExampleOpMode extends CobaltForge {
         setName("Example");
         addDirective(new ExampleDirective());
         addDirective(new ExampleDirective());
-        addDirective(new ExampleDirective());
+        addDirective(new ExampleDirective()); //Example, don't actually do this
     }
 }

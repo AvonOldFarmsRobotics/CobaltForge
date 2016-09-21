@@ -11,6 +11,6 @@ public class ExampleAutonomousOpMode extends CobaltForge {
         setName("ExampleAutonomous");
         addDirective(new ExampleAutonomousDirective())
                 .then(new ExampleAutonomousDirective())
-                .then(new ExampleAutonomousDirective());
+                .then(new ExampleAutonomousDirective()); //this actually works
     }
 }
