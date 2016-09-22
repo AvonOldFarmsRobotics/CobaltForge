@@ -1,8 +1,11 @@
 package framework.ftc.cobaltforge;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.Gamepad;
-import framework.ftc.cobaltforge.Inject.*;
+import com.qualcomm.robotcore.hardware.HardwareDevice;
+import framework.ftc.cobaltforge.exceptions.IllegalModificationException;
+import framework.ftc.cobaltforge.exceptions.IncompatibleInjectionException;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -16,9 +19,10 @@ import java.util.Map;
  * Created by Dummyc0m on 4/7/16.
  */
 @SuppressWarnings("WeakerAccess")
+@Disabled
 public abstract class CobaltForge extends OpMode {
-    private Map<GamePadComponent, List<DirectiveFieldPair>> gamePadMap1 = new HashMap<GamePadComponent, List<DirectiveFieldPair>>();
-    private Map<GamePadComponent, List<DirectiveFieldPair>> gamePadMap2 = new HashMap<GamePadComponent, List<DirectiveFieldPair>>();
+    private Map<Component, List<DirectiveFieldPair>> gamePadMap1 = new HashMap<Component, List<DirectiveFieldPair>>();
+    private Map<Component, List<DirectiveFieldPair>> gamePadMap2 = new HashMap<Component, List<DirectiveFieldPair>>();
 
     private List<AbstractDirective> handlerStore = new ArrayList<AbstractDirective>();
     private List<AbstractDirective> handlers = new ArrayList<AbstractDirective>();
@@ -58,25 +62,28 @@ public abstract class CobaltForge extends OpMode {
                             gamePadMap2.put(gamePad2.value(), fieldList);
                         }
                         fieldList.add(new DirectiveFieldPair(field, directive));
-                    } else if (clazz == DcMotor.class) {
-                        DcMotor dcMotor = ((DcMotor) annotation);
+                    } else if (clazz == Inject.DcMotor.class) {
+                        Inject.DcMotor dcMotor = ((Inject.DcMotor) annotation);
                         ensureType(field, com.qualcomm.robotcore.hardware.DcMotor.class);
                         try {
                             field.set(directive, hardwareMap.dcMotor.get(dcMotor.value()));
                         } catch (IllegalAccessException e) {
                             e.printStackTrace();
                         }
-                    } else if (clazz == Servo.class) {
-                        Servo servo = ((Servo) annotation);
+                    } else if (clazz == Inject.Servo.class) {
+                        Inject.Servo servo = ((Inject.Servo) annotation);
                         ensureType(field, com.qualcomm.robotcore.hardware.Servo.class);
                         try {
                             field.set(directive, hardwareMap.servo.get(servo.value()));
                         } catch (IllegalAccessException e) {
                             e.printStackTrace();
                         }
-                    } else if (clazz == Sensor.class) {
-                        Sensor sensor = ((Sensor) annotation);
+                    } else if (clazz == Inject.Sensor.class) {
+                        Inject.Sensor sensor = ((Inject.Sensor) annotation);
                         injectSensor(sensor.type(), sensor.value(), field, directive);
+                    } else if (clazz == Inject.class) {
+                        Inject inject = ((Inject) annotation);
+                        injectHardware(inject.value(), field, directive);
                     }
                 }
             }
@@ -90,13 +97,13 @@ public abstract class CobaltForge extends OpMode {
     @Override
     public final void loop() {
         try {
-            for (Map.Entry<GamePadComponent, List<DirectiveFieldPair>> e : gamePadMap1.entrySet()) {
+            for (Map.Entry<Component, List<DirectiveFieldPair>> e : gamePadMap1.entrySet()) {
                 for (DirectiveFieldPair f : e.getValue()) {
                     injectGamePad(f, e.getKey(), gamepad1);
                 }
             }
 
-            for (Map.Entry<GamePadComponent, List<DirectiveFieldPair>> e : gamePadMap2.entrySet()) {
+            for (Map.Entry<Component, List<DirectiveFieldPair>> e : gamePadMap2.entrySet()) {
                 for (DirectiveFieldPair f : e.getValue()) {
                     injectGamePad(f, e.getKey(), gamepad2);
                 }
@@ -130,8 +137,8 @@ public abstract class CobaltForge extends OpMode {
 
     @Override
     public final void stop() {
-        gamePadMap1 = new HashMap<GamePadComponent, List<DirectiveFieldPair>>();
-        gamePadMap2 = new HashMap<GamePadComponent, List<DirectiveFieldPair>>();
+        gamePadMap1 = new HashMap<Component, List<DirectiveFieldPair>>();
+        gamePadMap2 = new HashMap<Component, List<DirectiveFieldPair>>();
 
         handlerStore = new ArrayList<AbstractDirective>();
         handlers = new ArrayList<AbstractDirective>();
@@ -157,7 +164,7 @@ public abstract class CobaltForge extends OpMode {
         return this;
     }
 
-    private void injectGamePad(DirectiveFieldPair f, GamePadComponent gpc, Gamepad gamepad) throws IllegalAccessException {
+    private void injectGamePad(DirectiveFieldPair f, Component gpc, Gamepad gamepad) throws IllegalAccessException {
         switch (gpc) {
             case LEFT_STICK_X:
                 f.getField().set(f.getObj(), gamepad.left_stick_x);
@@ -231,6 +238,21 @@ public abstract class CobaltForge extends OpMode {
         }
     }
 
+    @SuppressWarnings("unchecked")
+    private void injectHardware(String name, Field field, Object directive) {
+        try {
+            HardwareDevice device = hardwareMap.get((Class<? extends HardwareDevice>) field.getType(), name);
+            field.set(directive, device);
+        } catch (IllegalArgumentException e) {
+            throw new IncompatibleInjectionException(e);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (ClassCastException e) {
+            throw new IncompatibleInjectionException(field, HardwareDevice.class);
+        }
+    }
+
+    @Deprecated
     private void injectSensor(SensorType sensorType, String name, Field field, Object directive) {
         try {
             switch (sensorType) {
@@ -307,44 +329,5 @@ public abstract class CobaltForge extends OpMode {
         }
         handlerStore.add(directive);
         directive.init(this);
-    }
-}
-
-final class DirectiveFieldPair {
-    private final AbstractDirective obj;
-    private final Field field;
-
-    DirectiveFieldPair(Field field, AbstractDirective obj) {
-        this.field = field;
-        this.obj = obj;
-    }
-
-    final AbstractDirective getObj() {
-        return obj;
-    }
-
-    final Field getField() {
-        return field;
-    }
-}
-
-final class IncompatibleInjectionException extends RuntimeException {
-    IncompatibleInjectionException(Throwable cause) {
-        super(cause);
-    }
-
-    IncompatibleInjectionException(Field field, Class expectedType) {
-        super("Incompatible type for Field: " +
-                field.getName() +
-                " in " +
-                field.getDeclaringClass().getName() +
-                ". The type should be " +
-                expectedType.getName());
-    }
-}
-
-final class IllegalModificationException extends RuntimeException {
-    IllegalModificationException(String message) {
-        super(message);
     }
 }

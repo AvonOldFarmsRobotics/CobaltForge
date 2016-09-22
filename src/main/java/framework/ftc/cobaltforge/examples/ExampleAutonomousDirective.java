@@ -10,18 +10,24 @@ import framework.ftc.cobaltforge.Inject;
  */
 @SuppressWarnings("WeakerAccess")
 public class ExampleAutonomousDirective extends AbstractDirective {
-    @Inject.DcMotor("autoDemo1")
+    @Inject("autoDemo1")
     DcMotor motor1;
-    @Inject.DcMotor("autoDemo2")
+    @Inject("autoDemo2")
     DcMotor motor2;
 
     int target1, target2;
+    int motor1Inc, motor2Inc;
+
+    public ExampleAutonomousDirective(int motor1Inc, int motor2Inc) {
+        this.motor1Inc = motor1Inc;
+        this.motor2Inc = motor2Inc;
+    }
 
     public void onStart() {
         motor1.setDirection(DcMotor.Direction.FORWARD);
         motor2.setDirection(DcMotor.Direction.REVERSE);
-        target1 = motor1.getCurrentPosition() + 1500;
-        target2 = motor2.getCurrentPosition() + 1500;
+        target1 = motor1.getCurrentPosition() + motor1Inc;
+        target2 = motor2.getCurrentPosition() + motor2Inc;
         motor1.setTargetPosition(target1);
         motor2.setTargetPosition(target2);
     }
