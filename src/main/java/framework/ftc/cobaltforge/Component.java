@@ -1,6 +1,7 @@
 package framework.ftc.cobaltforge;
 
 /**
+ * Gamepad component representation
  * Created by Dummyc0m on 9/22/16.
  */
 @SuppressWarnings("WeakerAccess")

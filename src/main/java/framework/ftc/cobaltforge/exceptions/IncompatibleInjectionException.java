@@ -3,6 +3,7 @@ package framework.ftc.cobaltforge.exceptions;
 import java.lang.reflect.Field;
 
 /**
+ * thrown when the field and the field type are not compatible
  * Created by Dummyc0m on 9/22/16.
  */
 public final class IncompatibleInjectionException extends RuntimeException {

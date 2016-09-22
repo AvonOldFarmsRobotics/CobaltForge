@@ -1,8 +1,10 @@
 package framework.ftc.cobaltforge;
 
 /**
+ * Sensor Types deprecated in favor of @Inject
  * Created by Dummyc0m on 9/22/16.
  */
+@Deprecated
 @SuppressWarnings("WeakerAccess")
 public enum SensorType {
     LEGACY_MODULE,
