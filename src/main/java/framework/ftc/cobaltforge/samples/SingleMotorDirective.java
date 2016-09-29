@@ -1,10 +1,10 @@
-package framework.ftc.cobaltforge.examples;
+package framework.ftc.cobaltforge.samples;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import framework.ftc.cobaltforge.AbstractDirective;
 import framework.ftc.cobaltforge.Component;
+import framework.ftc.cobaltforge.Device;
 import framework.ftc.cobaltforge.GamePad1;
-import framework.ftc.cobaltforge.Inject;
 
 
 /**
@@ -12,10 +12,10 @@ import framework.ftc.cobaltforge.Inject;
  * Created by Dummyc0m on 4/12/16.
  */
 @SuppressWarnings("WeakerAccess")
-public class ExampleDirective extends AbstractDirective {
-    @GamePad1(Component.A)
-    boolean a;
-    @Inject("demo")
+public class SingleMotorDirective extends AbstractDirective {
+    @GamePad1(Component.LEFT_STICK_Y)
+    float y;
+    @Device
     DcMotor motor;
 
     public void onStart() {
@@ -23,8 +23,6 @@ public class ExampleDirective extends AbstractDirective {
     }
 
     public void onLoop() {
-        if (a) {
-            motor.setPower(1.0d);
-        }
+        motor.setPower(y);
     }
 }

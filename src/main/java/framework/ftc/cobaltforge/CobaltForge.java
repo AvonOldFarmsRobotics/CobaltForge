@@ -34,6 +34,8 @@ public abstract class CobaltForge extends OpMode {
 
     @Override
     public final void init() {
+        Injector.telemetry = telemetry;
+
         prohibited = false;
         onInit();
         prohibited = true;
@@ -62,28 +64,30 @@ public abstract class CobaltForge extends OpMode {
                             gamePadMap2.put(gamePad2.value(), fieldList);
                         }
                         fieldList.add(new DirectiveFieldPair(field, directive));
-                    } else if (clazz == Inject.DcMotor.class) {
-                        Inject.DcMotor dcMotor = ((Inject.DcMotor) annotation);
-                        ensureType(field, com.qualcomm.robotcore.hardware.DcMotor.class);
-                        try {
-                            field.set(directive, hardwareMap.dcMotor.get(dcMotor.value()));
-                        } catch (IllegalAccessException e) {
-                            e.printStackTrace();
-                        }
-                    } else if (clazz == Inject.Servo.class) {
-                        Inject.Servo servo = ((Inject.Servo) annotation);
-                        ensureType(field, com.qualcomm.robotcore.hardware.Servo.class);
-                        try {
-                            field.set(directive, hardwareMap.servo.get(servo.value()));
-                        } catch (IllegalAccessException e) {
-                            e.printStackTrace();
-                        }
-                    } else if (clazz == Inject.Sensor.class) {
-                        Inject.Sensor sensor = ((Inject.Sensor) annotation);
-                        injectSensor(sensor.type(), sensor.value(), field, directive);
+//                    } else if (clazz == Device.DcMotor.class) {
+//                        Device.DcMotor dcMotor = ((Device.DcMotor) annotation);
+//                        ensureType(field, com.qualcomm.robotcore.hardware.DcMotor.class);
+//                        try {
+//                            field.set(directive, hardwareMap.dcMotor.get(dcMotor.value()));
+//                        } catch (IllegalAccessException e) {
+//                            e.printStackTrace();
+//                        }
+//                    } else if (clazz == Device.Servo.class) {
+//                        Device.Servo servo = ((Device.Servo) annotation);
+//                        ensureType(field, com.qualcomm.robotcore.hardware.Servo.class);
+//                        try {
+//                            field.set(directive, hardwareMap.servo.get(servo.value()));
+//                        } catch (IllegalAccessException e) {
+//                            e.printStackTrace();
+//                        }
+//                    } else if (clazz == Device.Sensor.class) {
+//                        Device.Sensor sensor = ((Device.Sensor) annotation);
+//                        injectSensor(sensor.type(), sensor.value(), field, directive);
+                    } else if (clazz == Device.class) {
+                        Device device = ((Device) annotation);
+                        injectDevice(device.value(), field, directive);
                     } else if (clazz == Inject.class) {
-                        Inject inject = ((Inject) annotation);
-                        injectHardware(inject.value(), field, directive);
+                        Injector.getInstance().injectField(field, directive);
                     }
                 }
             }
@@ -239,8 +243,11 @@ public abstract class CobaltForge extends OpMode {
     }
 
     @SuppressWarnings("unchecked")
-    private void injectHardware(String name, Field field, Object directive) {
+    private void injectDevice(String name, Field field, AbstractDirective directive) {
         try {
+            if ("".equals(name)) {
+                name = field.getName();
+            }
             HardwareDevice device = hardwareMap.get((Class<? extends HardwareDevice>) field.getType(), name);
             field.set(directive, device);
         } catch (IllegalArgumentException e) {
@@ -252,76 +259,76 @@ public abstract class CobaltForge extends OpMode {
         }
     }
 
-    @Deprecated
-    private void injectSensor(SensorType sensorType, String name, Field field, Object directive) {
-        try {
-            switch (sensorType) {
-                case LEGACY_MODULE:
-                    field.set(directive, hardwareMap.legacyModule.get(name));
-                    break;
-                case TOUCH_SENSOR_MULTIPLEXER:
-                    field.set(directive, hardwareMap.touchSensorMultiplexer.get(name));
-                    break;
-                case DEVICE_INTERFACE_MODULE:
-                    field.set(directive, hardwareMap.deviceInterfaceModule.get(name));
-                    break;
-                case ANALOG_INPUT:
-                    field.set(directive, hardwareMap.analogInput.get(name));
-                    break;
-                case DIGITAL_CHANNEL:
-                    field.set(directive, hardwareMap.digitalChannel.get(name));
-                    break;
-                case OPTICAL_DISTANCE_SENSOR:
-                    field.set(directive, hardwareMap.opticalDistanceSensor.get(name));
-                    break;
-                case TOUCH_SENSOR:
-                    field.set(directive, hardwareMap.touchSensor.get(name));
-                    break;
-                case PWM_OUTPUT:
-                    field.set(directive, hardwareMap.pwmOutput.get(name));
-                    break;
-                case I2C_DEVICE:
-                    field.set(directive, hardwareMap.i2cDevice.get(name));
-                    break;
-                case ANALOG_OUTPUT:
-                    field.set(directive, hardwareMap.analogOutput.get(name));
-                    break;
-                case COLOR_SENSOR:
-                    field.set(directive, hardwareMap.colorSensor.get(name));
-                    break;
-                case LED:
-                    field.set(directive, hardwareMap.led.get(name));
-                    break;
-                case ACCELERATION_SENSOR:
-                    field.set(directive, hardwareMap.accelerationSensor.get(name));
-                    break;
-                case COMPASS_SENSOR:
-                    field.set(directive, hardwareMap.compassSensor.get(name));
-                    break;
-                case GYRO_SENSOR:
-                    field.set(directive, hardwareMap.gyroSensor.get(name));
-                    break;
-                case IR_SEEKER_SENSOR:
-                    field.set(directive, hardwareMap.irSeekerSensor.get(name));
-                    break;
-                case LIGHT_SENSOR:
-                    field.set(directive, hardwareMap.lightSensor.get(name));
-                    break;
-                case ULTRASONIC_SENSOR:
-                    field.set(directive, hardwareMap.ultrasonicSensor.get(name));
-                    break;
-                case VOLTAGE_SENSOR:
-                    field.set(directive, hardwareMap.voltageSensor.get(name));
-                    break;
-                default:
-                    throw new IllegalArgumentException("What a terrible failure");
-            }
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (IllegalArgumentException e) {
-            throw new IncompatibleInjectionException(e);
-        }
-    }
+//    @Deprecated
+//    private void injectSensor(SensorType sensorType, String name, Field field, Object directive) {
+//        try {
+//            switch (sensorType) {
+//                case LEGACY_MODULE:
+//                    field.set(directive, hardwareMap.legacyModule.get(name));
+//                    break;
+//                case TOUCH_SENSOR_MULTIPLEXER:
+//                    field.set(directive, hardwareMap.touchSensorMultiplexer.get(name));
+//                    break;
+//                case DEVICE_INTERFACE_MODULE:
+//                    field.set(directive, hardwareMap.deviceInterfaceModule.get(name));
+//                    break;
+//                case ANALOG_INPUT:
+//                    field.set(directive, hardwareMap.analogInput.get(name));
+//                    break;
+//                case DIGITAL_CHANNEL:
+//                    field.set(directive, hardwareMap.digitalChannel.get(name));
+//                    break;
+//                case OPTICAL_DISTANCE_SENSOR:
+//                    field.set(directive, hardwareMap.opticalDistanceSensor.get(name));
+//                    break;
+//                case TOUCH_SENSOR:
+//                    field.set(directive, hardwareMap.touchSensor.get(name));
+//                    break;
+//                case PWM_OUTPUT:
+//                    field.set(directive, hardwareMap.pwmOutput.get(name));
+//                    break;
+//                case I2C_DEVICE:
+//                    field.set(directive, hardwareMap.i2cDevice.get(name));
+//                    break;
+//                case ANALOG_OUTPUT:
+//                    field.set(directive, hardwareMap.analogOutput.get(name));
+//                    break;
+//                case COLOR_SENSOR:
+//                    field.set(directive, hardwareMap.colorSensor.get(name));
+//                    break;
+//                case LED:
+//                    field.set(directive, hardwareMap.led.get(name));
+//                    break;
+//                case ACCELERATION_SENSOR:
+//                    field.set(directive, hardwareMap.accelerationSensor.get(name));
+//                    break;
+//                case COMPASS_SENSOR:
+//                    field.set(directive, hardwareMap.compassSensor.get(name));
+//                    break;
+//                case GYRO_SENSOR:
+//                    field.set(directive, hardwareMap.gyroSensor.get(name));
+//                    break;
+//                case IR_SEEKER_SENSOR:
+//                    field.set(directive, hardwareMap.irSeekerSensor.get(name));
+//                    break;
+//                case LIGHT_SENSOR:
+//                    field.set(directive, hardwareMap.lightSensor.get(name));
+//                    break;
+//                case ULTRASONIC_SENSOR:
+//                    field.set(directive, hardwareMap.ultrasonicSensor.get(name));
+//                    break;
+//                case VOLTAGE_SENSOR:
+//                    field.set(directive, hardwareMap.voltageSensor.get(name));
+//                    break;
+//                default:
+//                    throw new IllegalArgumentException("What a terrible failure");
+//            }
+//        } catch (IllegalAccessException e) {
+//            e.printStackTrace();
+//        } catch (IllegalArgumentException e) {
+//            throw new IncompatibleInjectionException(e);
+//        }
+//    }
 
     final void addHandlerStore(AbstractDirective directive) {
         if (prohibited) {
