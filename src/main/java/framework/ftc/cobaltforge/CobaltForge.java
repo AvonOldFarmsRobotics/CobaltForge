@@ -34,7 +34,7 @@ public abstract class CobaltForge extends OpMode {
 
     @Override
     public final void init() {
-        Injector.telemetry = telemetry;
+        Injector.runningCobalt = this;
 
         prohibited = false;
         onInit();
@@ -91,6 +91,7 @@ public abstract class CobaltForge extends OpMode {
                     }
                 }
             }
+            directive.onInit();
         }
     }
 
