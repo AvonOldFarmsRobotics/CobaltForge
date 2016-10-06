@@ -10,33 +10,4 @@ import java.lang.annotation.RetentionPolicy;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Device {
     String value() default "";
-
-//    /**
-//     * Created by Dummyc0m on 9/22/16.
-//     */
-//    @Deprecated
-//    @Retention(RetentionPolicy.RUNTIME)
-//    @interface DcMotor {
-//        String value();
-//    }
-//
-//    /**
-//     * Created by Dummyc0m on 9/22/16.
-//     */
-//    @Deprecated
-//    @Retention(RetentionPolicy.RUNTIME)
-//    @interface Sensor {
-//        SensorType type();
-//
-//        String value();
-//    }
-//
-//    /**
-//     * Created by Dummyc0m on 9/22/16.
-//     */
-//    @Deprecated
-//    @Retention(RetentionPolicy.RUNTIME)
-//    @interface Servo {
-//        String value();
-//    }
 }
