@@ -1,10 +1,10 @@
-package framework.ftc.cobaltforge;
+package framework.ftc.cobaltforge
 
 /**
  * Internal
  * Created by Dummyc0m on 4/12/16.
  */
-enum ExecutionResult {
+internal enum class ExecutionResult {
     /**
      * Directive still working
      */
@@ -16,5 +16,5 @@ enum ExecutionResult {
     /**
      * Run the next directive in chain
      */
-    RUN_NEXT,
+    RUN_NEXT
 }
