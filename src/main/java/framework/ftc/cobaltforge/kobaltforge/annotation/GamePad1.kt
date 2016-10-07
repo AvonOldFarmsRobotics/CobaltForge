@@ -1,4 +1,4 @@
-package framework.ftc.cobaltforge
+package framework.ftc.cobaltforge.kobaltforge.annotation
 
 /**
  * Injects Components on GP1

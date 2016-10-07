@@ -1,4 +1,4 @@
-package framework.ftc.cobaltforge.exceptions
+package framework.ftc.cobaltforge.kobaltforge.exception
 
 import java.lang.reflect.Field
 

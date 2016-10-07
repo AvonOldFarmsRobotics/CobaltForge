@@ -1,4 +1,4 @@
-package framework.ftc.cobaltforge.exceptions
+package framework.ftc.cobaltforge.kobaltforge.exception
 
 /**
  * thrown when directives are added after init

@@ -5,8 +5,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>framework.ftc.cobaltforge</groupId>
-    <artifactId>CobaltForge</artifactId>
-    <version>0.1.1-SNAPSHOT</version>
+    <artifactId>KobaltForge</artifactId>
+    <version>0.0-SNAPSHOT</version>
 
     <properties>
         <kotlin.version>1.0.4</kotlin.version>
@@ -68,11 +68,11 @@
             <version>release</version>
             <systemPath>${basedir}/src/lib/com/qualcomm/robotcore/RobotCore-release.jar</systemPath>
         </dependency>
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <version>19.0</version>
-        </dependency>
+        <!--<dependency>-->
+        <!--<groupId>com.google.guava</groupId>-->
+        <!--<artifactId>guava</artifactId>-->
+        <!--<version>19.0</version>-->
+        <!--</dependency>-->
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
             <artifactId>kotlin-stdlib</artifactId>
