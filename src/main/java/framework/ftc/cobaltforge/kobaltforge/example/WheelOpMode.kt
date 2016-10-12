@@ -29,9 +29,9 @@ class WheelOpMode : KobaltForge() {
     @GamePad1(Component.X)
     var x = false
 
-    val leftAccumulator = Accumulator<Double>(0.0) { new, old -> new + old }
+    val leftAccumulator = Accumulator(0.0) { new, old -> new + old }
 
-    val rightAccumulator = Accumulator<Double>(0.0) { new, old -> new + old }
+    val rightAccumulator = Accumulator(0.0) { new, old -> new + old }
 
     @Inject
     val wheelProgram = WheelProgram(leftAccumulator, rightAccumulator)
@@ -45,6 +45,7 @@ class WheelOpMode : KobaltForge() {
         }
 
         onLoop {
+            // do not put onLoop in here, it will fail with IllegalAccessException
             telemetry("X: $x")
             telemetry("Y: $y")
             if (x) {

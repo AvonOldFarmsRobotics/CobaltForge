@@ -22,9 +22,7 @@ abstract class KobaltForge : OpMode() {
     private val gamePad2Mapping: MutableMap<Component, MutableList<Field>> = HashMap()
     private val injector = Injector(this)
 
-    val opModeName: String
-        get() = name
-    protected var name = "CobaltForge"
+    protected var name = "KobaltForge"
 
     private val loop = Blocks()
     private val loopInit = Blocks()
@@ -40,6 +38,8 @@ abstract class KobaltForge : OpMode() {
         with(LoopExecutor(block)) {
             if (notStarted)
                 loop.offer(this)
+            else
+                throw IllegalAccessException("Adding blocks after init")
             return this
         }
     }
