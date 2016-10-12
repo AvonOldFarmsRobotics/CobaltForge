@@ -47,21 +47,29 @@ abstract class KobaltForge : OpMode() {
     fun onLoopInit(block: () -> Unit) {
         if (notStarted)
             loopInit.offer(block)
+        else
+            throw IllegalAccessException("Adding blocks after init")
     }
 
     fun onInit(block: () -> Unit) {
         if (notStarted)
             init.offer(block)
+        else
+            throw IllegalAccessException("Adding blocks after init")
     }
 
     fun onStart(block: () -> Unit) {
         if (notStarted)
             start.offer(block)
+        else
+            throw IllegalAccessException("Adding blocks after init")
     }
 
     fun onStop(block: () -> Unit) {
         if (notStarted)
             stop.offer(block)
+        else
+            throw IllegalAccessException("Adding blocks after init")
     }
 
     final override fun init_loop() {
