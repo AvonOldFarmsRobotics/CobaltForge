@@ -12,40 +12,34 @@
         <kotlin.version>1.0.4</kotlin.version>
     </properties>
 
+    <!--<repositories>-->
+    <!--<repository>-->
+    <!--<id>jCenter</id>-->
+    <!--<url>http://jcenter.bintray.com</url>-->
+    <!--</repository>-->
+    <!--</repositories>-->
+
     <build>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <version>2.6</version>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id> <!-- this is used for inheritance merges -->
+                        <phase>package</phase> <!--  bind to the packaging phase -->
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
                 <configuration>
-                    <!--<archive>-->
-                    <!--<manifest>-->
-                    <!--<mainClass>fully.qualified.MainClass</mainClass>-->
-                    <!--</manifest>-->
-                    <!--</archive>-->
                     <descriptorRefs>
                         <descriptorRef>jar-with-dependencies</descriptorRef>
                     </descriptorRefs>
                 </configuration>
             </plugin>
-            <!--<plugin>-->
-            <!--<groupId>org.apache.maven.plugins</groupId>-->
-            <!--<artifactId>maven-shade-plugin</artifactId>-->
-            <!--<version>2.4.3</version>-->
-            <!--<configuration>-->
-            <!--<minimizeJar>true</minimizeJar>-->
-            <!--&lt;!&ndash; put your configurations here &ndash;&gt;-->
-            <!--</configuration>-->
-            <!--<executions>-->
-            <!--<execution>-->
-            <!--<phase>package</phase>-->
-            <!--<goals>-->
-            <!--<goal>shade</goal>-->
-            <!--</goals>-->
-            <!--</execution>-->
-            <!--</executions>-->
-            <!--</plugin>-->
             <plugin>
                 <groupId>org.jetbrains.kotlin</groupId>
                 <artifactId>kotlin-maven-plugin</artifactId>
@@ -63,6 +57,30 @@
                         <phase>process-test-sources</phase>
                         <goals>
                             <goal>test-compile</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>moveFiles</id>
+                        <phase>install</phase>
+                        <configuration>
+                            <tasks>
+                                <copy todir="/Users/Dummyc0m/Google Drive/Synced-Dev/aofFtcApp/libs" flatten="true"
+                                      overwrite="true"
+                                      verbose="true" failonerror="true">
+                                    <!--<fileset dir="commonbuildtreedir"-->
+                                    <!--includes="**/target/*-sa*.jar"/>-->
+                                    <fileset dir="/Users/Dummyc0m/Google Drive/Synced-Dev/CobaltForge/target/"
+                                             includes="*.jar"/>
+                                </copy>
+                            </tasks>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
                         </goals>
                     </execution>
                 </executions>
@@ -99,5 +117,31 @@
             <version>${kotlin.version}</version>
             <scope>test</scope>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/com.google.android/android -->
+        <dependency>
+            <groupId>com.google.android</groupId>
+            <artifactId>android</artifactId>
+            <version>4.1.1.4</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jetbrains.anko</groupId>
+            <artifactId>anko-sdk19</artifactId>
+            <version>0.9</version>
+        </dependency>
+        <!--<dependency>-->
+        <!--<groupId>org.jetbrains.anko</groupId>-->
+        <!--<artifactId>anko-appcompact-v7</artifactId>-->
+        <!--<version>0.9</version>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+        <!--<groupId>org.jetbrains.anko</groupId>-->
+        <!--<artifactId>anko-support-v4</artifactId>-->
+        <!--<version>0.9</version>-->
+        <!--</dependency>-->
     </dependencies>
+
+    <!--compile 'org.jetbrains.anko:anko-sdk15:0.9' // sdk19, sdk21, sdk23 are also available-->
+    <!--compile 'org.jetbrains.anko:anko-support-v4:0.9' // In case you need support-v4 bindings-->
+    <!--compile 'org.jetbrains.anko:anko-appcompat-v7:0.9' // For appcompat-v7 bindings-->
 </project>

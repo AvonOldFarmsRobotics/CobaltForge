@@ -1,6 +1,6 @@
 package framework.ftc.cobaltforge.kobaltforge.exception
 
-import java.lang.reflect.Field
+import kotlin.reflect.KMutableProperty1
 
 /**
  * thrown when the field and the field type are not compatible
@@ -10,11 +10,9 @@ class IncompatibleInjectionException : RuntimeException {
     constructor(cause: Throwable) : super(cause) {
     }
 
-    constructor(field: Field, expectedType: Class<*>) : super("Incompatible type for Field: " +
+    constructor(field: KMutableProperty1<Any, Any>, expectedType: Class<*>) : super("Incompatible type for Field: " +
             field.name +
-            " in " +
-            field.declaringClass.name +
-            ". The type should be " +
+            " should be " +
             expectedType.name) {
     }
 }

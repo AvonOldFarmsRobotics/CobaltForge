@@ -9,8 +9,10 @@ import framework.ftc.cobaltforge.kobaltforge.annotation.GamePad2
 import framework.ftc.cobaltforge.kobaltforge.util.Blocks
 import framework.ftc.cobaltforge.kobaltforge.util.Injector
 import framework.ftc.cobaltforge.kobaltforge.util.LoopExecutor
-import java.lang.reflect.Field
 import java.util.*
+import kotlin.reflect.KMutableProperty1
+import kotlin.reflect.declaredMemberProperties
+import kotlin.reflect.jvm.isAccessible
 
 /**
  * The brand new Kobalt Forge!
@@ -18,8 +20,10 @@ import java.util.*
  */
 @Disabled
 abstract class KobaltForge : OpMode() {
-    private val gamePad1Mapping: MutableMap<Component, MutableList<Field>> = HashMap()
-    private val gamePad2Mapping: MutableMap<Component, MutableList<Field>> = HashMap()
+    //    private val gamePad1Mapping: MutableMap<Component, MutableList<Field>> = HashMap()
+//    private val gamePad2Mapping: MutableMap<Component, MutableList<Field>> = HashMap()
+    private val gamePad1Mapping: MutableMap<Component, MutableList<KMutableProperty1<Any, Any>>> = HashMap()
+    private val gamePad2Mapping: MutableMap<Component, MutableList<KMutableProperty1<Any, Any>>> = HashMap()
     private val injector = Injector(this)
 
     protected var name = "KobaltForge"
@@ -87,33 +91,63 @@ abstract class KobaltForge : OpMode() {
     final override fun init() {
         construct()
         notStarted = false
-        this.javaClass.declaredFields.forEach { field ->
-            field.isAccessible = true
-            field.annotations.forEach { annotation ->
-                when (annotation) {
-                    is GamePad1 -> {
-                        var list = gamePad1Mapping[annotation.value]
-                        if (list == null) {
-                            list = ArrayList()
-                            gamePad1Mapping[annotation.value] = list
+        RuntimeException(this.javaClass.canonicalName).printStackTrace()
+        this.javaClass.kotlin.declaredMemberProperties.forEach { kProperty ->
+            if (kProperty is KMutableProperty1<KobaltForge, *>) {
+                kProperty.isAccessible = true
+                kProperty.annotations.forEach { annotation ->
+                    when (annotation) {
+                        is GamePad1 -> {
+                            var list = gamePad1Mapping[annotation.value]
+                            if (list == null) {
+                                list = ArrayList()
+                                gamePad1Mapping[annotation.value] = list
+                            }
+                            list.add(kProperty as KMutableProperty1<Any, Any>)
                         }
-                        list.add(field)
-                    }
-                    is GamePad2 -> {
-                        var list = gamePad2Mapping[annotation.value]
-                        if (list == null) {
-                            list = ArrayList()
-                            gamePad2Mapping[annotation.value] = list
+                        is GamePad2 -> {
+                            var list = gamePad2Mapping[annotation.value]
+                            if (list == null) {
+                                list = ArrayList()
+                                gamePad2Mapping[annotation.value] = list
+                            }
+                            list.add(kProperty as KMutableProperty1<Any, Any>)
                         }
-                        list.add(field)
-                    }
-                    else -> {
-                        injector.injectField(field, annotation, this)
+                        else -> {
+                            injector.injectField(kProperty as KMutableProperty1<Any, Any>, annotation, this)
+                        }
                     }
                 }
             }
         }
-
+//        this.javaClass.declaredFields.forEach { field ->
+//            field.isAccessible = true
+//            RuntimeException(field.name).printStackTrace()
+//            field.annotations.forEach { annotation ->
+//                RuntimeException(annotation.toString() + " " + (annotation is Device)).printStackTrace()
+//                when (annotation) {
+//                    is GamePad1 -> {
+//                        var list = gamePad1Mapping[annotation.value]
+//                        if (list == null) {
+//                            list = ArrayList()
+//                            gamePad1Mapping[annotation.value] = list
+//                        }
+//                        list.add(field)
+//                    }
+//                    is GamePad2 -> {
+//                        var list = gamePad2Mapping[annotation.value]
+//                        if (list == null) {
+//                            list = ArrayList()
+//                            gamePad2Mapping[annotation.value] = list
+//                        }
+//                        list.add(field)
+//                    }
+//                    else -> {
+//                        injector.injectField(field, annotation, this)
+//                    }
+//                }
+//            }
+//        }
         init.run()
     }
 
@@ -131,7 +165,7 @@ abstract class KobaltForge : OpMode() {
         loop.run()
     }
 
-    private fun injectGamePad(f: Field, gpc: Component, gamepad: Gamepad) {
+    private fun injectGamePad(f: KMutableProperty1<Any, Any>, gpc: Component, gamepad: Gamepad) {
         when (gpc) {
             Component.LEFT_STICK_X -> f.set(this, gamepad.left_stick_x)
             Component.LEFT_STICK_Y -> f.set(this, gamepad.left_stick_y)
