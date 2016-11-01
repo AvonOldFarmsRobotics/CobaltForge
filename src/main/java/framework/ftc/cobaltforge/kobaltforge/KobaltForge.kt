@@ -91,7 +91,6 @@ abstract class KobaltForge : OpMode() {
     final override fun init() {
         construct()
         notStarted = false
-        RuntimeException(this.javaClass.canonicalName).printStackTrace()
         this.javaClass.kotlin.declaredMemberProperties.forEach { kProperty ->
             if (kProperty is KMutableProperty1<KobaltForge, *>) {
                 kProperty.isAccessible = true
