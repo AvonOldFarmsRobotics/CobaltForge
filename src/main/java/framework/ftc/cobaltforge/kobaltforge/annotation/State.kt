@@ -4,12 +4,12 @@ package framework.ftc.cobaltforge.kobaltforge.annotation
  * Be stateful and persistent
  *
  * Supports
- * StringSet
- * String
- * Int
+ * String default ""
+ * Int default 0
  * Long
  * Float
- * Boolean
+ * Double
+ * Boolean default false
  * Created by Dummyc0m on 10/26/16.
  */
 @Retention(AnnotationRetention.RUNTIME)

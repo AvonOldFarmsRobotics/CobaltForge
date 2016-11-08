@@ -11,8 +11,8 @@ import framework.ftc.cobaltforge.kobaltforge.util.Injector
 import framework.ftc.cobaltforge.kobaltforge.util.LoopExecutor
 import java.util.*
 import kotlin.reflect.KMutableProperty1
-import kotlin.reflect.declaredMemberProperties
 import kotlin.reflect.jvm.isAccessible
+import kotlin.reflect.memberProperties
 
 /**
  * The brand new Kobalt Forge!
@@ -91,7 +91,7 @@ abstract class KobaltForge : OpMode() {
     final override fun init() {
         construct()
         notStarted = false
-        this.javaClass.kotlin.declaredMemberProperties.forEach { kProperty ->
+        this.javaClass.kotlin.memberProperties.forEach { kProperty ->
             if (kProperty is KMutableProperty1<KobaltForge, *>) {
                 kProperty.isAccessible = true
                 kProperty.annotations.forEach { annotation ->
@@ -119,6 +119,7 @@ abstract class KobaltForge : OpMode() {
                 }
             }
         }
+        injector.saveDefaultConfig()
 //        this.javaClass.declaredFields.forEach { field ->
 //            field.isAccessible = true
 //            RuntimeException(field.name).printStackTrace()
