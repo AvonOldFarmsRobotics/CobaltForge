@@ -24,7 +24,11 @@ class StateActivity() : Activity() {
         if (intent.extras !== null) {
             className = intent.extras.getString("configFile")
         }
-        loadConfig()
+        try {
+            loadConfig()
+        } catch (e: Exception) {
+            RobotLog.a("Nothing Exists, Run the Configurable OpMode first")
+        }
         StateUI().setContentView(this)
     }
 

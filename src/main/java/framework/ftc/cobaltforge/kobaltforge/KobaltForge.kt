@@ -20,8 +20,6 @@ import kotlin.reflect.memberProperties
  */
 @Disabled
 abstract class KobaltForge : OpMode() {
-    //    private val gamePad1Mapping: MutableMap<Component, MutableList<Field>> = HashMap()
-//    private val gamePad2Mapping: MutableMap<Component, MutableList<Field>> = HashMap()
     private val gamePad1Mapping: MutableMap<Component, MutableList<KMutableProperty1<Any, Any>>> = HashMap()
     private val gamePad2Mapping: MutableMap<Component, MutableList<KMutableProperty1<Any, Any>>> = HashMap()
     private val injector = Injector(this)
@@ -119,35 +117,7 @@ abstract class KobaltForge : OpMode() {
                 }
             }
         }
-        injector.saveDefaultConfig()
-//        this.javaClass.declaredFields.forEach { field ->
-//            field.isAccessible = true
-//            RuntimeException(field.name).printStackTrace()
-//            field.annotations.forEach { annotation ->
-//                RuntimeException(annotation.toString() + " " + (annotation is Device)).printStackTrace()
-//                when (annotation) {
-//                    is GamePad1 -> {
-//                        var list = gamePad1Mapping[annotation.value]
-//                        if (list == null) {
-//                            list = ArrayList()
-//                            gamePad1Mapping[annotation.value] = list
-//                        }
-//                        list.add(field)
-//                    }
-//                    is GamePad2 -> {
-//                        var list = gamePad2Mapping[annotation.value]
-//                        if (list == null) {
-//                            list = ArrayList()
-//                            gamePad2Mapping[annotation.value] = list
-//                        }
-//                        list.add(field)
-//                    }
-//                    else -> {
-//                        injector.injectField(field, annotation, this)
-//                    }
-//                }
-//            }
-//        }
+        saveConfig()
         init.run()
     }
 
@@ -193,5 +163,22 @@ abstract class KobaltForge : OpMode() {
 
     fun telemetry(anything: Any?) {
         telemetry.addData(name, anything)
+    }
+
+    /**
+     * Works only when started
+     */
+    fun saveConfig() {
+        if (!notStarted) {
+            injector.saveConfig()
+        }
+    }
+
+    fun put(name: String, value: Any) {
+        injector.configManager.put(name, value)
+    }
+
+    fun get(name: String, defaultValue: Any): Any {
+        return injector.configManager.get(name, defaultValue)
     }
 }
