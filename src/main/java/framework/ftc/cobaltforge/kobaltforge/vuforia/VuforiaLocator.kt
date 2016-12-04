@@ -1,9 +1,8 @@
-package framework.ftc.cobaltforge.kobaltforge.util
+package framework.ftc.cobaltforge.kobaltforge.vuforia
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables
+import org.firstinspires.ftc.robotcore.external.navigation.*
 
 /**
  * Created by Dummyc0m on 11/12/16.
@@ -38,5 +37,14 @@ class VuforiaLocator(assets: String,
         params.cameraDirection = cameraDirection
         params.vuforiaLicenseKey = licenseKey
         vuforia = ClassFactory.createVuforiaLocalizer(params)
+    }
+
+
+    fun constructMatrix(x: Float = 0f, y: Float = 0f, z: Float = 0f,
+                        rotationX: Float = 0f, rotationY: Float = 0f, rotationZ: Float = 0f): OpenGLMatrix {
+        return OpenGLMatrix.translation(x, y, z)
+                .multiplied(Orientation.getRotationMatrix(
+                        AxesReference.EXTRINSIC, AxesOrder.XYZ,
+                        AngleUnit.DEGREES, rotationX, rotationY, rotationZ))
     }
 }
