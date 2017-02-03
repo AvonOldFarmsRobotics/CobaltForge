@@ -1,6 +1,6 @@
 package framework.ftc.cobaltforge.kobaltforge.example
 
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp
+import com.qualcomm.robotcore.eventloop.opmode.Disabled
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.DcMotorSimple
 import com.qualcomm.robotcore.util.RobotLog
@@ -15,7 +15,8 @@ import framework.ftc.cobaltforge.kobaltforge.util.Accumulator
  * An example for KobaltForge
  * Created by Dummyc0m on 10/6/16.
  */
-@TeleOp(name = "WheelOpMode")
+//@TeleOp(name = "WheelOpMode")
+@Disabled
 class WheelOpMode : KobaltForge() {
     @Device
     lateinit var leftMotor: DcMotor
