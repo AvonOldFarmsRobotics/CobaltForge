@@ -2,17 +2,9 @@ package framework.ftc.cobaltforge.kobaltforge
 
 import com.qualcomm.robotcore.eventloop.opmode.Disabled
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
-import com.qualcomm.robotcore.hardware.Gamepad
-import framework.ftc.cobaltforge.kobaltforge.annotation.Component
-import framework.ftc.cobaltforge.kobaltforge.annotation.GamePad1
-import framework.ftc.cobaltforge.kobaltforge.annotation.GamePad2
 import framework.ftc.cobaltforge.kobaltforge.util.Blocks
 import framework.ftc.cobaltforge.kobaltforge.util.Injector
 import framework.ftc.cobaltforge.kobaltforge.util.LoopExecutor
-import java.util.*
-import kotlin.reflect.KMutableProperty1
-import kotlin.reflect.jvm.isAccessible
-import kotlin.reflect.memberProperties
 
 /**
  * The brand new Kobalt Forge!
@@ -20,18 +12,20 @@ import kotlin.reflect.memberProperties
  */
 @Disabled
 abstract class KobaltForge : OpMode() {
-    private val gamePad1Mapping: MutableMap<Component, MutableList<KMutableProperty1<Any, Any>>> = HashMap()
-    private val gamePad2Mapping: MutableMap<Component, MutableList<KMutableProperty1<Any, Any>>> = HashMap()
+    // The magical object powering all the reflection
     private val injector = Injector(this)
 
+    // You may change this in construct... Fine, anywhere.
     protected var name = "KobaltForge"
 
+    // Registered blocks (from construct)
     private val loop = Blocks()
     private val loopInit = Blocks()
     private val init = Blocks()
     private val start = Blocks()
     private val stop = Blocks()
 
+    // Makes sure that nothing gets added after the program starts running. Theoretically you could, but it's a design decision
     private var notStarted = true
 
     abstract fun construct()
@@ -89,76 +83,14 @@ abstract class KobaltForge : OpMode() {
     final override fun init() {
         construct()
         notStarted = false
-        this.javaClass.kotlin.memberProperties.forEach { kProperty ->
-            if (kProperty is KMutableProperty1<KobaltForge, *>) {
-                kProperty.isAccessible = true
-                kProperty.annotations.forEach { annotation ->
-                    when (annotation) {
-                        is GamePad1 -> {
-                            var list = gamePad1Mapping[annotation.value]
-                            if (list == null) {
-                                list = ArrayList()
-                                gamePad1Mapping[annotation.value] = list
-                            }
-                            list.add(kProperty as KMutableProperty1<Any, Any>)
-                        }
-                        is GamePad2 -> {
-                            var list = gamePad2Mapping[annotation.value]
-                            if (list == null) {
-                                list = ArrayList()
-                                gamePad2Mapping[annotation.value] = list
-                            }
-                            list.add(kProperty as KMutableProperty1<Any, Any>)
-                        }
-                        else -> {
-                            injector.injectField(kProperty as KMutableProperty1<Any, Any>, annotation, this)
-                        }
-                    }
-                }
-            }
-        }
+        injector.injectObject(this)
         saveConfig()
         init.run()
     }
 
     final override fun loop() {
-        gamePad1Mapping.forEach { entry ->
-            entry.value.forEach { field ->
-                injectGamePad(field, entry.key, gamepad1)
-            }
-        }
-        gamePad2Mapping.forEach { entry ->
-            entry.value.forEach { field ->
-                injectGamePad(field, entry.key, gamepad2)
-            }
-        }
+        injector.executeLoopTasks()
         loop.run()
-    }
-
-    private fun injectGamePad(f: KMutableProperty1<Any, Any>, gpc: Component, gamepad: Gamepad) {
-        when (gpc) {
-            Component.LEFT_STICK_X -> f.set(this, gamepad.left_stick_x)
-            Component.LEFT_STICK_Y -> f.set(this, gamepad.left_stick_y)
-            Component.RIGHT_STICK_X -> f.set(this, gamepad.right_stick_x)
-            Component.RIGHT_STICK_Y -> f.set(this, gamepad.right_stick_y)
-            Component.DPAD_UP -> f.set(this, gamepad.dpad_up)
-            Component.DPAD_DOWN -> f.set(this, gamepad.dpad_down)
-            Component.DPAD_LEFT -> f.set(this, gamepad.dpad_left)
-            Component.DPAD_RIGHT -> f.set(this, gamepad.dpad_right)
-            Component.A -> f.set(this, gamepad.a)
-            Component.B -> f.set(this, gamepad.b)
-            Component.X -> f.set(this, gamepad.x)
-            Component.Y -> f.set(this, gamepad.y)
-            Component.GUIDE -> f.set(this, gamepad.guide)
-            Component.START -> f.set(this, gamepad.start)
-            Component.BACK -> f.set(this, gamepad.back)
-            Component.LEFT_BUMPER -> f.set(this, gamepad.left_bumper)
-            Component.RIGHT_BUMPER -> f.set(this, gamepad.right_bumper)
-            Component.LEFT_STICK_BUTTON -> f.set(this, gamepad.left_stick_button)
-            Component.RIGHT_STICK_BUTTON -> f.set(this, gamepad.right_stick_button)
-            Component.LEFT_TRIGGER -> f.set(this, gamepad.left_trigger)
-            Component.RIGHT_TRIGGER -> f.set(this, gamepad.right_trigger)
-        }
     }
 
     fun telemetry(anything: Any?) {

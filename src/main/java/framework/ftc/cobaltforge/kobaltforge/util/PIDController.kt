@@ -9,6 +9,10 @@ class PIDController(val kP: Double, val kI: Double, val kD: Double) {
     var derivative = 0.0
 
     fun calculate(error: Double): Double {
+        return iterate(error)
+    }
+
+    fun iterate(error: Double): Double {
         derivative = error - lastError
         integral += error
         return kP * error + kI * integral + kD * derivative
