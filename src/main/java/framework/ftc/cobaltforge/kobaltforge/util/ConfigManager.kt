@@ -30,7 +30,7 @@ internal class ConfigManager(val kobaltForge: KobaltForge) {
         }
     }
 
-    fun injectState(name: String, property: KMutableProperty1<Any, Any>) {
+    fun injectState(name: String, property: KMutableProperty1<Any, Any>, obj: Any) {
         var localName = name
         try {
             if ("" == localName) {
@@ -43,18 +43,18 @@ internal class ConfigManager(val kobaltForge: KobaltForge) {
                 val wronglyTyped = config.getJSONObject(localName).getString("value")
                 if (wronglyTyped !== null) {
                     val value = convertType(wronglyTyped, type)
-                    property.set(kobaltForge, value)
+                    property.set(obj, value)
                 } else {
                     throw NullPointerException("Json state file structure is broken")
                 }
             } else {
                 val field = property.javaField
                 if (field !== null) {
-                    RobotLog.a("Writing new Value ${field.get(kobaltForge)}")
+                    RobotLog.a("Writing new Value ${field.get(obj)}")
 //                    dirtyConfig.put(localName, JSONObject()
 //                            .put("value", field.get(kobaltForge))
 //                            .put("type", field.type.canonicalName))
-                    put(localName, field.get(kobaltForge))
+                    put(localName, field.get(obj))
                 }
             }
         } catch (e: IllegalArgumentException) {

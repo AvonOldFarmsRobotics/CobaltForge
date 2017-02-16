@@ -8,28 +8,28 @@ import framework.ftc.cobaltforge.kobaltforge.annotation.*
 import framework.ftc.cobaltforge.kobaltforge.exception.IncompatibleInjectionException
 import java.util.*
 import kotlin.reflect.KMutableProperty1
-import kotlin.reflect.declaredMemberProperties
 import kotlin.reflect.jvm.isAccessible
+import kotlin.reflect.memberProperties
 
 /**
  * Helper class for Kobalt
  * Created by Dummyc0m on 9/28/16.
  */
-internal class Injector(val kobaltForge: KobaltForge) {
+internal class Injector(val kobaltForge: KobaltForge, val debug: Boolean) {
     val configManager = ConfigManager(kobaltForge)
     val loopTasks: MutableList<() -> Unit> = ArrayList()
 
     /**
      * Tosses the device onto the field
      */
-    private fun injectDevice(name: String, field: KMutableProperty1<Any, Any>) {
+    private fun injectDevice(name: String, field: KMutableProperty1<Any, Any>, obj: Any) {
         var localName = name
         try {
             if ("" == localName) {
                 localName = field.name
             }
             val device = kobaltForge.hardwareMap.get(localName)
-            field.set(kobaltForge, device)
+            field.set(obj, device)
         } catch (e: IllegalArgumentException) {
             throw IncompatibleInjectionException(e)
         } catch (e: ClassCastException) {
@@ -72,7 +72,7 @@ internal class Injector(val kobaltForge: KobaltForge) {
      * Injects objects (recursively), especially the OpMode instance itself
      */
     fun injectObject(obj: Any) {
-        val fields = obj.javaClass.kotlin.declaredMemberProperties
+        val fields = obj.javaClass.kotlin.memberProperties
         for (field in fields) {
             field.isAccessible = true
             val annotations = field.annotations
@@ -89,10 +89,10 @@ internal class Injector(val kobaltForge: KobaltForge) {
             RobotLog.a("Attempting to inject $field $annotation")
             when (annotation) {
                 is Device -> {
-                    injectDevice(annotation.value, field)
+                    injectDevice(annotation.value, field, parent)
                 }
                 is State -> {
-                    configManager.injectState(annotation.value, field)
+                    configManager.injectState(annotation.value, field, parent)
                 }
                 is Inject -> {
                     val obj = field.get(parent)

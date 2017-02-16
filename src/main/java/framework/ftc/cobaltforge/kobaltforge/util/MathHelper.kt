@@ -11,7 +11,7 @@ object MathHelper {
     private val random = Random()
 
     init {
-        for (var0 in 0..65536) {
+        for (var0 in 0..65535) {
             SIN_TABLE[var0] = Math.sin(var0.toDouble() * Math.PI * 2.0 / 65536.0).toFloat()
         }
     }

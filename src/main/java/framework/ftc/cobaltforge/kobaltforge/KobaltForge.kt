@@ -12,8 +12,10 @@ import framework.ftc.cobaltforge.kobaltforge.util.LoopExecutor
  */
 @Disabled
 abstract class KobaltForge : OpMode() {
+    var debug = false
+
     // The magical object powering all the reflection
-    private val injector = Injector(this)
+    private val injector = Injector(this, debug)
 
     // You may change this in construct... Fine, anywhere.
     protected var name = "KobaltForge"
